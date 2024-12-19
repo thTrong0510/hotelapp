@@ -1,0 +1,116 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="booking-form">
+        <div class="form-image">
+            <div class="border rounded">
+                <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
+                    <div class="carousel-inner" role="listbox">
+                        <div class="carousel-item active rounded">
+                            <img src="../../static/client/images/single-room-view.jpg"
+                                 class="img-fluid w-100 h-100 bg-secondary rounded"
+                                 alt="First slide">
+                        </div>
+                        <div class="carousel-item rounded">
+                            <img src="../../static/client/images/bathroom-single-room.jpg"
+                                 class="img-fluid w-100 h-100 rounded"
+                                 alt="Second slide">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselId"
+                            data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselId"
+                            data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+            <hr/>
+            <div>
+                <h4>{{ room_type.name }}</h4>
+                <p>{{ room.short_desc }}</p>
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="form-header">
+                <h2>Hotel Room Booking</h2>
+                <p>Fill in the form to book your stay with us</p>
+            </div>
+            <form id="bookingForm" action="/completed-booking" method="post">
+                <!-- Guest Information -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="fullName" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="fullName" placeholder="Enter your full name"
+                               value="{{ current_user.name }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" placeholder="Enter your email"
+                               value="{{ current_user.email }}" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number"
+                               required>
+                        <div id="phoneError" class="error-message"></div><br>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="numGuests_booking" class="form-label">Number of Guests</label>
+                        <input type="number" class="form-control text-center" id="numGuests_booking" placeholder="Enter number of guests"
+                               value="1" min="1" max="{{ room.capacity }}" required>
+                    </div>
+                </div>
+
+                <!-- Booking Details -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="checkIn" class="form-label">Check-in Date</label>
+                        <input type="date" class="form-control" id="checkIn" required>
+                        <div id="checkInError" class="error-message"></div><br>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="checkOut" class="form-label">Check-out Date</label>
+                        <input type="date" class="form-control" id="checkOut" required>
+                        <div id="checkOutError" class="error-message"></div><br>
+                    </div>
+                </div>
+                <div class="mb-3 col-md-12">
+                    <label for="roomType" class="form-label">Room Type</label>
+                    <input type="text" class="form-control text-center" id="roomType" value="{{ room_type.name }}" disabled>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" id="quantity_booking" size="{{ room.vacant_room }}" class="form-control text-center" value="1" max="{{ room.vacant_room }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="price_booking" class="form-label">Price</label>
+                        <input style="display: inline;" type="text" class="form-control text-center" id="price_booking" value="{{ room.price }} $" data-daily-multiplier="{{ room_type.daily_multiplier }}" data-session-multiplier="{{ room_type.session_multiplier }}" data-room-count-multiplier="{{ room_type.room_count_multiplier }}" data-foreign-guest-multiplier="{{ room_type.foreign_guest_multiplier }}" data-base-price="{{ room.price }}" readonly required>
+                    </div>
+                </div>
+
+                <!-- Special Requests -->
+                <div class="mb-3">
+                    <label for="specialRequests" class="form-label">Special Requests</label>
+                    <textarea class="form-control" id="specialRequests" rows="3"
+                              placeholder="Enter any special requests"></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary w-100">Book Now</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
