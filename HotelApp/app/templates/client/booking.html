@@ -45,26 +45,26 @@
                 <!-- Guest Information -->
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="fullName" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="fullName" placeholder="Enter your full name"
-                               value="{{ current_user.name }}" required>
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               value="{{ current_user.name }}" required readonly>
                     </div>
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="email" placeholder="Enter your email"
-                               value="{{ current_user.email }}" required>
+                        <input type="email" class="form-control" id="email" name="email"
+                               value="{{ current_user.email }}" required readonly>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="phone" class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number"
+                        <label for="customer_phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="customer_phone" name="customer_phone" placeholder="Enter your phone number"
                                required>
                         <div id="phoneError" class="error-message"></div><br>
                     </div>
                     <div class="col-md-6">
                         <label for="numGuests_booking" class="form-label">Number of Guests</label>
-                        <input type="number" class="form-control text-center" id="numGuests_booking" placeholder="Enter number of guests"
+                        <input type="number" class="form-control text-center" id="numGuests_booking" name="numGuests_booking" placeholder="Enter number of guests"
                                value="1" min="1" max="{{ room.capacity }}" required>
                     </div>
                 </div>
@@ -73,35 +73,36 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="checkIn" class="form-label">Check-in Date</label>
-                        <input type="date" class="form-control" id="checkIn" required>
+                            <input type="date" class="form-control" id="checkIn" name="checkIn" required>
                         <div id="checkInError" class="error-message"></div><br>
                     </div>
                     <div class="col-md-6">
                         <label for="checkOut" class="form-label">Check-out Date</label>
-                        <input type="date" class="form-control" id="checkOut" required>
+                        <input type="date" class="form-control" id="checkOut" name="checkOut" required>
                         <div id="checkOutError" class="error-message"></div><br>
                     </div>
                 </div>
                 <div class="mb-3 col-md-12">
                     <label for="roomType" class="form-label">Room Type</label>
                     <input type="text" class="form-control text-center" id="roomType" value="{{ room_type.name }}" disabled>
+                    <input type="hidden" class="form-control text-center" id="room_id" name="room_id" value="{{ room.id }}">
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Quantity</label>
-                        <input type="number" id="quantity_booking" size="{{ room.vacant_room }}" class="form-control text-center" value="1" max="{{ room.vacant_room }}">
+                        <input type="number" id="quantity_booking" name="quantity_booking" size="{{ room.vacant_room }}" class="form-control text-center" min="1" value="1" max="{{ room.vacant_room }}">
                     </div>
                     <div class="col-md-6">
                         <label for="price_booking" class="form-label">Price</label>
-                        <input style="display: inline;" type="text" class="form-control text-center" id="price_booking" value="{{ room.price }} $" data-daily-multiplier="{{ room_type.daily_multiplier }}" data-session-multiplier="{{ room_type.session_multiplier }}" data-room-count-multiplier="{{ room_type.room_count_multiplier }}" data-foreign-guest-multiplier="{{ room_type.foreign_guest_multiplier }}" data-base-price="{{ room.price }}" readonly required>
+                        <input style="display: inline;" type="text" class="form-control text-center" id="price_booking" name="price_booking" value="{{ room.price }}" data-daily-multiplier="{{ room_type.daily_multiplier }}" data-session-multiplier="{{ room_type.session_multiplier }}" data-room-count-multiplier="{{ room_type.room_count_multiplier }}" data-foreign-guest-multiplier="{{ room_type.foreign_guest_multiplier }}" data-base-price="{{ room.price }}" readonly required>
                     </div>
                 </div>
 
                 <!-- Special Requests -->
                 <div class="mb-3">
                     <label for="specialRequests" class="form-label">Special Requests</label>
-                    <textarea class="form-control" id="specialRequests" rows="3"
+                    <textarea class="form-control" id="specialRequests" name="specialRequests" rows="3"
                               placeholder="Enter any special requests"></textarea>
                 </div>
 

@@ -67,9 +67,19 @@ def get_room_by_namecapacity(capacity=1, name_room_type="Standard Room"):
 def get_room_by_id(id):
     return Room.query.filter_by(id=id).first()
 
-def add_cart(user_id, total_quantity=0, total_price=0):
-    cart = Cart(user_id=user_id, total_quantity=total_quantity, total_price=total_price)
+def update_vacant_room_by_id(room_id, vacant_room):
+    room = Room.query.filter_by(id=room_id).first()
+    room.vacant_room = vacant_room
+    db.session.commit()
+
+def add_cart(user_id, total_quantity=0):
+    cart = Cart(user_id=user_id, total_quantity=total_quantity)
     db.session.add(cart)
+    db.session.commit()
+
+def update_quantity_cart_by_id(id, quantity):
+    cart = Cart.query.filter_by(user_id=id).first()
+    cart.total_quantity = quantity
     db.session.commit()
 
 def get_cart_by_userid(user_id):
@@ -81,12 +91,8 @@ def get_cart_detail_by_roomid(room_id):
 def load_cart_detail_by_cartid(cart_id):
     return CartDetail.query.filter_by(cart_id=cart_id).all()
 
-def update_quantity_room_cart_detail(cart_detail, quantity):
-    cart_detail.quantity += quantity
-    db.session.commit()
-
-def add_cart_detail(cart_id, room_id, quantity, price):
-    cart_detail = CartDetail(cart_id=cart_id, room_id=room_id, quantity=quantity, price=price)
+def add_cart_detail(cart_id, room_id):
+    cart_detail = CartDetail(cart_id=cart_id, room_id=room_id)
     db.session.add(cart_detail)
     db.session.commit()
 
@@ -95,6 +101,23 @@ def del_cart_detail_by_id(cart_detail_id):
     db.session.delete(cart_detail)
     db.session.commit()
     #update cart
+
+def count_cart_detail_by_cartid(cart_id):
+    return CartDetail.query.filter_by(cart_id=cart_id).count()
+
+def add_book(user_id, customer_phone):
+    book = Book(user_id=user_id, customer_phone=customer_phone)
+    db.session.add(book)
+    db.session.commit()
+
+def get_last_book():
+    return Book.query.order_by(Book.id.desc()).first()
+
+def add_book_detail(book_id, room_id, check_in_date, check_out_date, total_price, quantity, special_request):
+    book_detail = BookDetail(book_id=book_id, room_id=room_id, check_in_date=check_in_date, check_out_date=check_out_date, total_price=total_price, quantity=quantity, special_request=special_request)
+    db.session.add(book_detail)
+    db.session.commit()
+    return book_detail
 
 def auth_user(email, password, role=None):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())

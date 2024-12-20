@@ -33,13 +33,12 @@ class User(db.Model, UserMixin):
     user_role = Column(Enum(UserRole), default=UserRole.USER)
     user_type = Column(Enum(UserType), default=UserType.Domestic)
     cart = db.relationship('Cart', uselist=False, backref='user', cascade='all, delete-orphan')
+    book_details = relationship('Book', backref='user', lazy=True)
 
 # Model Cart (quan hệ một-nhiều với User, chỉ để hiển thị ra giao diện số lượng phòng)
 class Cart(db.Model):
-    # id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True ,nullable=False)  # Khóa ngoại liên kết đến User
     total_quantity = db.Column(db.Integer, default=0)
-    total_price = db.Column(Float, default=0)
     cart_details = db.relationship('CartDetail', backref='cart', lazy=True)
 
 # Model CartDetail (quan hệ một-nhiều với Cart và nhiều-đến-1 với Room)
@@ -47,9 +46,6 @@ class CartDetail(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cart_id = db.Column(db.Integer, db.ForeignKey('cart.user_id'), nullable=False)  # Khóa ngoại liên kết đến Cart
     room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)  # Khóa ngoại liên kết đến Room
-    quantity = db.Column(db.Integer, nullable=False)  # Số lượng phòng
-    price = db.Column(Float, nullable=False)
-
 
 class RoomType(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -85,23 +81,19 @@ class RoomImage(db.Model):
 
 class Book(db.Model):
     id = Column(db.Integer, primary_key=True, autoincrement=True)
-    customer_name = Column(db.String(100), nullable=False)
-    customer_email = Column(db.String(100), nullable=False)
     customer_phone = Column(db.String(100), nullable=False)
     booking_date = Column(db.DateTime, default=db.func.current_timestamp())
-    total_price = Column(Float, nullable=False)
-    book_details = relationship('BookDetail', backref='book', lazy=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=False)
+    book_detail = db.relationship('BookDetail', uselist=False, backref='book', cascade='all, delete-orphan')
 
-# Model BookDetail (một BookDetail thuộc về một Book, nhiều chi tiết phòng cho một Book)
 class BookDetail(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)  # khóa ngoại liên kết đến Book
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), primary_key=True, nullable=False)  # khóa ngoại liên kết đến Book
     room_id = db.Column(db.Integer, db.ForeignKey('room.id'),nullable=False)  # ID của phòng
     check_in_date = db.Column(db.DateTime, nullable=False)
     check_out_date = db.Column(db.DateTime, nullable=False)
-    price = db.Column(Float, nullable=False)
-    special_request = db.Column(db.Text, nullable=True)
-
+    total_price = db.Column(Float, nullable=False)
+    quantity = Column(Integer, nullable=False)
+    special_request = db.Column(db.Text, default="null")
 
 if __name__ == '__main__':
     with app.app_context():

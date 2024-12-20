@@ -29,12 +29,6 @@ def homePage():
     # dao.add_room("Double Room", "A Double Room in a hotel is designed to accommodate two guests comfortably. It typically features one double bed or sometimes a queen-size bed, making it ideal for couples or travelers who prefer to share a bed. The room size is usually around 20-25 square meters, providing enough space for relaxation.", "A Double Room accommodates 2 guests with one double or queen-size bed, ideal for couples or friends.", 20,2,3,3, True, 3)
     # dao.add_room("Triple Room", "A Triple Room in a hotel is designed to accommodate three guests comfortably. It typically features either one double bed and one single bed or three single beds, depending on the hotel's layout. The room is spacious, usually ranging from 25 to 35 square meters, and comes equipped with essential amenities such as a private bathroom, air conditioning, a flat-screen TV, free Wi-Fi, a minibar, and tea/coffee-making facilities.", "A Triple Room accommodates 3 guests with 1 double and 1 single bed or 3 single beds, ideal for families or friends.", 30,3,3,3, True, 3)
 
-    #đăng kí 1 tài khoản trước khi chạy 3 câu này
-    # dao.add_cart(1, 2, 30);
-    # dao.add_cart_detail(1, 2, 1, 10)
-    # dao.add_cart_detail(1, 3, 1, 20)
-
-
     name_room_type = request.args.get('type')
     capacity_in_room = request.args.get('capacity')
     room_types = dao.load_room_type()
@@ -45,23 +39,26 @@ def homePage():
     if current_user.is_authenticated:
         cart = dao.get_cart_by_userid(current_user.id)
         if not cart:
-            dao.add_cart(current_user.id, 0, 0)
+            dao.add_cart(current_user.id, 0)
     else:
         cart = {"id": None}
 
     return render_template("client/show.html", room_types=room_types, room=room, room_type=room_type, rooms=rooms, cart=cart)
 
-@app.route('/login', methods=['get', 'post'])
+@app.route('/login', methods=['get'])
 def loginPage():
-    if request.method.__eq__('POST'):
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        u = dao.auth_user(email=email, password=password)
-        if u:
-            login_user(u)
-            return redirect('/')
     return render_template("client/login.html")
+
+@app.route('/login', methods=['post'])
+def login_process():
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    u = dao.auth_user(email=email, password=password)
+    if u:
+        login_user(u)
+        return redirect('/')
+    return  redirect('client/login.html')
 
 @app.route('/register', methods=['get', 'post'])
 def registerPage():
@@ -91,8 +88,6 @@ def logout_process():
 def cart_page():
     if current_user.is_authenticated:
         cart = dao.get_cart_by_userid(current_user.id)
-        if not cart:
-            dao.add_cart(current_user.id, 0, 0)
         cart_details = dao.load_cart_detail_by_cartid(cart.user_id)
         rooms = []
         room_types = []
@@ -111,13 +106,12 @@ def cart_process():
         data = json.loads(request.form.get("post_cart_detail"))
         room_id = data.get("room_id")
         cart_id = data.get("cart_id")
-        price = data.get("price")
 
         cart_detail = dao.get_cart_detail_by_roomid(room_id=room_id)
-        if cart_detail:
-            dao.update_quantity_room_cart_detail(cart_detail=cart_detail, quantity=1)
-        else:
-            dao.add_cart_detail(cart_id, room_id, 1, price)
+        if not cart_detail:
+            dao.add_cart_detail(cart_id, room_id)
+            quantity = dao.count_cart_detail_by_cartid(current_user.id)
+            dao.update_quantity_cart_by_id(current_user.id, quantity)
 
     return redirect("/")
 
@@ -126,7 +120,10 @@ def handle_del_cart_detail():
     data = json.loads(request.form.get("post_cart_detail"))
     cart_detail_id = data.get("cart_detail_id")
     cart_id = data.get("cart_id")
-    dao.del_cart_detail_by_id(cart_detail_id=cart_detail_id)
+    dao.del_cart_detail_by_id(cart_detail_id)
+
+    quantity = dao.count_cart_detail_by_cartid(current_user.id)
+    dao.update_quantity_cart_by_id(cart_id, quantity)
 
     return redirect("/cart")
 
@@ -149,21 +146,40 @@ def booking_page():
         room_id = request.args.get('room_id')
         room = dao.get_room_by_id(id=room_id)
         room_type = dao.get_room_type_by_id(id=room.room_type_id)
-        quantity = 1
-        price = 1
 
         return render_template("/client/booking.html", room=room, room_type=room_type)
 
 @app.route("/completed-booking", methods=['post'])
 def process_booking():
+    data = request.form.copy()
+    room_id = data['room_id']
+    user_id = current_user.id
+
+    dao.add_book(user_id=user_id, customer_phone=data['customer_phone'])
+    book = dao.get_last_book()
+    dao.add_book_detail(book_id=book.id, room_id=room_id, check_in_date=data['checkIn'], check_out_date=data['checkOut'], total_price=data['price_booking'], quantity=data['quantity_booking'], special_request=data['specialRequests'])
+
+    room = dao.get_room_by_id(id=room_id)
+    vacant_room = room.vacant_room - int(data['quantity_booking'])
+
+    dao.update_vacant_room_by_id(room_id, vacant_room)
+
     return redirect("/completed-booking")
 
 @app.route("/completed-booking", methods=['get'])
 def completed_booking_page():
     return render_template("client/completed_booking.html")
 
-
-
+#không được dùng tạo biến toàn cục cart ngay đây vì cần user_id -> khi người dùng log out sẽ lỗi
+# @app.context_processor
+# def common_context_params():
+#     if current_user.is_authenticated:
+#         if request.path.startswith('/admin'):
+#             pass
+#         else:
+#             return {
+#                 "cart": dao.get_cart_by_userid(current_user.id)
+#             }
 
 @login.user_loader
 def get_user_by_id(user_id):
