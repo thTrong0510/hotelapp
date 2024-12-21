@@ -83,6 +83,8 @@ class Book(db.Model):
     id = Column(db.Integer, primary_key=True, autoincrement=True)
     customer_phone = Column(db.String(100), nullable=False)
     booking_date = Column(db.DateTime, default=db.func.current_timestamp())
+    accurate_checkout_date = Column(db.DateTime, nullable=False)
+    status = Column(Boolean, default=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=False)
     book_detail = db.relationship('BookDetail', uselist=False, backref='book', cascade='all, delete-orphan')
 
@@ -93,6 +95,7 @@ class BookDetail(db.Model):
     check_out_date = db.Column(db.DateTime, nullable=False)
     total_price = db.Column(Float, nullable=False)
     quantity = Column(Integer, nullable=False)
+    number_of_foreigners = Column(Integer, default=0)
     special_request = db.Column(db.Text, default="null")
 
 if __name__ == '__main__':

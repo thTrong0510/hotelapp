@@ -2,12 +2,15 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
+                    <i class="fa fa-user fa-3x" aria-hidden="true"></i>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Đây là nội dung của modal.
+                    <p>Name: {{ current_user.name }}</p>
+                    <p>Email: {{ current_user.email }}</p>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer d-flex justify-content-around">
+                    <a href="/booked" class="btn btn-primary">History</a>
                     <a href="/logout" class="btn btn-primary">Log Out</a>
                 </div>
             </div>

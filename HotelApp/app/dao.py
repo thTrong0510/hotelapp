@@ -105,19 +105,38 @@ def del_cart_detail_by_id(cart_detail_id):
 def count_cart_detail_by_cartid(cart_id):
     return CartDetail.query.filter_by(cart_id=cart_id).count()
 
-def add_book(user_id, customer_phone):
-    book = Book(user_id=user_id, customer_phone=customer_phone)
+def load_book_by_userid(user_id):
+    return Book.query.filter_by(user_id=user_id).all()
+
+def add_book(user_id, customer_phone, accurate_checkout_date):
+    book = Book(user_id=user_id, customer_phone=customer_phone, accurate_checkout_date=accurate_checkout_date)
     db.session.add(book)
     db.session.commit()
 
 def get_last_book():
     return Book.query.order_by(Book.id.desc()).first()
 
-def add_book_detail(book_id, room_id, check_in_date, check_out_date, total_price, quantity, special_request):
-    book_detail = BookDetail(book_id=book_id, room_id=room_id, check_in_date=check_in_date, check_out_date=check_out_date, total_price=total_price, quantity=quantity, special_request=special_request)
+def update_accurate_checkout_date(book_id, accurate_checkout_date):
+    book = Book.query.filter_by(id=book_id).first()
+    book.accurate_checkout_date = accurate_checkout_date
+    db.session.commit()
+
+def update_book_overdues(book_id):
+    book = Book.query.filter_by(id=book_id).first()
+    book.status = False
+    db.session.commit()
+
+def get_book_details_by_bookid(book_id):
+    return BookDetail.query.filter_by(book_id=book_id).first()
+
+def add_book_detail(book_id, room_id, check_in_date, check_out_date, total_price, quantity, number_of_foreigners, special_request):
+    book_detail = BookDetail(book_id=book_id, room_id=room_id, check_in_date=check_in_date, check_out_date=check_out_date, total_price=total_price, quantity=quantity, number_of_foreigners=number_of_foreigners, special_request=special_request)
     db.session.add(book_detail)
     db.session.commit()
     return book_detail
+
+def load_book_detail_overdues(current_date):
+    return db.session.query(BookDetail).filter(BookDetail.checkOutDate < current_date).all()
 
 def auth_user(email, password, role=None):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())

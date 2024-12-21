@@ -22,9 +22,9 @@
                     {% for cart_detail in cart_details %}
                     <tr>
                          <td>
-                             <form action="/booking" method="post" class="center-button d-flex justify-content-center align-items-end">
+                             <form action="/booking" method="post" style="height: 100%;" class="mb-0 mt-3 ml-0 center-button d-flex justify-content-left align-items-center">
                                 <input type="hidden" name="post_cart_detail" value='{"room_id": "{{ cart_detail.room_id }}", "cart_detail_id": "{{ cart_detail.id }}"}'>
-                                <button type="submit" id="bookingBtnCart" class="cartBtn btn border border-secondary rounded-pill px-4 py-2 mb-4 mx-2 text-primary">Book</button>
+                                <button type="submit" id="bookingBtnCart" class="cartBtn btn border border-secondary rounded-pill px-4 py-2 mb-2 ml-0 mr-2 text-center text-primary">Book</button>
                              </form>
                         </td>
                         <th scope="row">

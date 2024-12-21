@@ -1,4 +1,6 @@
 formSudmit = document.getElementById('bookingForm');
+const checkInInput = document.getElementById('checkIn');
+const checkOutInput = document.getElementById('checkOut');
 if(formSudmit) {
     formSudmit.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -10,8 +12,6 @@ if(formSudmit) {
 
         const checkInError = document.getElementById('checkInError');
         const checkOutError = document.getElementById('checkOutError');
-        const checkInInput = document.getElementById('checkIn');
-        const checkOutInput = document.getElementById('checkOut');
 
         const checkInDate = new Date(checkInInput.value);
         const checkOutDate = new Date(checkOutInput.value);
@@ -71,6 +71,7 @@ if(formSudmit) {
         if (checkInInput.classList.contains('error') || checkOutInput.classList.contains('error') || phoneInput.classList.contains('error')) {
             return;
         }
+
         this.submit();
     });
 }
@@ -79,23 +80,30 @@ if(formSudmit) {
 const priceInput = document.getElementById('price_booking');
 const quantityInput = document.getElementById('quantity_booking');
 const numGuestInput = document.getElementById('numGuests_booking');
-const basePrice = parseFloat(priceInput.dataset.basePrice) || 0;
-const roomCountMultiplier = parseFloat(priceInput.dataset.roomCountMultiplier) || 0;
-const sessionMultiplier = parseFloat(priceInput.dataset.sessionMultiplier) || 0;
-const dailyMultiplier = parseFloat(priceInput.dataset.dailyMultiplier) || 0;
-const foreignGuestMultiplier = parseFloat(priceInput.dataset.foreign_guest_multiplier) || 0;
+const numberOfForeignersInput = document.getElementById('number_foreigners');
 
 // Hàm tính giá
 function calculatePrice() {
+    const basePrice = parseFloat(priceInput.dataset.basePrice) || 0;
+    const roomCountMultiplier = parseFloat(priceInput.dataset.roomCountMultiplier) || 0;
+    const sessionMultiplier = parseFloat(priceInput.dataset.sessionMultiplier) || 0;
+    const dailyMultiplier = parseFloat(priceInput.dataset.dailyMultiplier) || 0;
+    const foreignMultiplier = parseFloat(priceInput.dataset.foreignGuestMultiplier) || 0;
     const quantity = parseFloat(quantityInput.value) || 0;
-    const numGuest = parseFloat(numGuestInput.value) || 0;
-
-    var totalPrice = basePrice * dailyMultiplier * dailyMultiplier;
+    const numberOfForeigners = parseFloat(numberOfForeignersInput.value) || 0;
+    var totalPrice = basePrice * dailyMultiplier;
+    var dates = calculateDaysDifference();
     if(quantity > 1) {
         var price = totalPrice;
         for(let i = 1; i < quantity; i++) {
             totalPrice = totalPrice + price * roomCountMultiplier;
         }
+    }
+    if(numberOfForeigners > 0) {
+        totalPrice = totalPrice + totalPrice * foreignMultiplier;
+    }
+    if(dates > 0) {
+        totalPrice = totalPrice * (dates + 1);
     }
 
     // Gán giá trị mới vào trường price
@@ -106,9 +114,45 @@ function calculatePrice() {
 if(quantityInput) {
     quantityInput.addEventListener('change', calculatePrice);
 }
-if(numGuestInput) {
-    numGuestInput.addEventListener('change', calculatePrice);
+if(numberOfForeignersInput) {
+    numberOfForeignersInput.addEventListener('change', calculatePrice);
 }
 
-// Tính giá ban đầu
-calculatePrice();
+const totalGuestsInput = document.getElementById("numGuests_booking");
+
+// Hàm kiểm tra và giới hạn giá trị của NumberOfForeigners
+function validateNumberOfForeigners() {
+    const totalGuests = parseInt(totalGuestsInput.value) || 0;
+    const numberOfForeigners = parseInt(numberOfForeignersInput.value) || 0;
+
+    // Nếu số người nước ngoài vượt quá tổng số khách, đặt lại giá trị
+    if (numberOfForeigners > totalGuests) {
+        numberOfForeignersInput.value = totalGuests;
+    }
+}
+
+// Gắn sự kiện lắng nghe thay đổi giá trị
+if(numberOfForeignersInput) {
+    numberOfForeignersInput.addEventListener("input", validateNumberOfForeigners);
+}
+if(totalGuestsInput) {
+    totalGuestsInput.addEventListener("input", validateNumberOfForeigners);
+}
+
+function calculateDaysDifference() {
+    // Kiểm tra nếu cả hai ngày đều hợp lệ
+    const checkIn = new Date(checkInInput.value);
+    const checkOut = new Date(checkOutInput.value);
+    if (!isNaN(checkIn) && !isNaN(checkOut)) {
+        const differenceInTime = checkOut - checkIn; // Khoảng cách thời gian tính bằng milliseconds
+        const differenceInDays = differenceInTime / (1000 * 60 * 60 * 24); // Đổi từ milliseconds sang ngày
+        return Math.max(differenceInDays, 0); // Đảm bảo không trả về giá trị âm
+    }
+}
+
+if(checkInInput) {
+    checkInInput.addEventListener("change", calculatePrice);
+}
+if(checkOutInput){
+    checkOutInput.addEventListener("change", calculatePrice);
+}
