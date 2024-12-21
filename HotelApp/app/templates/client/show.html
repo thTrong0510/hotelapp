@@ -13,14 +13,19 @@
                         <div class="border rounded">
                             <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
                                 <div class="carousel-inner" role="listbox">
+                                    {% for image in room_image %}
+                                    {% if loop.index0 == 0 %}
                                     <div class="carousel-item active rounded">
-                                        <img src="../../static/client/images/single-room-view.jpg" class="img-fluid w-100 h-100 bg-secondary rounded"
+                                        <img src="../../static/client/images/{{ image.image }}" class="img-fluid w-100 h-100 bg-secondary rounded"
                                              alt="First slide">
                                     </div>
+                                    {% else %}
                                     <div class="carousel-item rounded">
-                                        <img src="../../static/client/images/bathroom-single-room.jpg" class="img-fluid w-100 h-100 rounded"
+                                        <img src="../../static/client/images/{{ image.image }}" class="img-fluid w-100 h-100 rounded"
                                              alt="Second slide">
                                     </div>
+                                    {% endif %}
+                                    {% endfor %}
                                 </div>
                                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselId"
                                         data-bs-slide="prev">
@@ -178,7 +183,7 @@
                 {% for r in rooms %}
                 <div class="border border-primary rounded position-relative vesitable-item">
                     <div class="vesitable-img">
-                        <img src="../../static/client/images/single-room-view.jpg" class="img-fluid w-100 rounded-top"
+                        <img src="../../static/client/images/{{ room_images[loop.index0][0].image }}" class="img-fluid w-100 rounded-top"
                              alt="">
                     </div>
                     <div class="text-white bg-primary px-3 py-1 rounded position-absolute"

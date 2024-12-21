@@ -32,6 +32,38 @@ def homePage():
     # dao.add_room("Single Room", "A Single Room in a hotel is designed to accommodate one guest, making it ideal for solo travelers or business guests. The room typically features a single bed (twin size) or sometimes a small double bed, depending on the hotel's standard. The average room size is around 15-20 square meters, providing a compact yet comfortable space.", "A Single Room accommodates 1 guest with a single bed, ideal for solo travelers, offering basic amenities.", 10, 1,4,4, True, 3)
     # dao.add_room("Double Room", "A Double Room in a hotel is designed to accommodate two guests comfortably. It typically features one double bed or sometimes a queen-size bed, making it ideal for couples or travelers who prefer to share a bed. The room size is usually around 20-25 square meters, providing enough space for relaxation.", "A Double Room accommodates 2 guests with one double or queen-size bed, ideal for couples or friends.", 20,2,3,3, True, 3)
     # dao.add_room("Triple Room", "A Triple Room in a hotel is designed to accommodate three guests comfortably. It typically features either one double bed and one single bed or three single beds, depending on the hotel's layout. The room is spacious, usually ranging from 25 to 35 square meters, and comes equipped with essential amenities such as a private bathroom, air conditioning, a flat-screen TV, free Wi-Fi, a minibar, and tea/coffee-making facilities.", "A Triple Room accommodates 3 guests with 1 double and 1 single bed or 3 single beds, ideal for families or friends.", 30,3,3,3, True, 3)
+    #
+    # dao.add_room_image_by_roomid(room_id=1, image="sd_room1_1.jpg")
+    # dao.add_room_image_by_roomid(room_id=1, image="sd_room1_2.jpg")
+    # dao.add_room_image_by_roomid(room_id=1, image="sd_room1_3.jpg")
+    #
+    # dao.add_room_image_by_roomid(room_id=2, image="sd_room2_1.jpg")
+    # dao.add_room_image_by_roomid(room_id=2, image="sd_room2_2.jpg")
+    # dao.add_room_image_by_roomid(room_id=2, image="sd_room2_3.jpg")
+    #
+    # dao.add_room_image_by_roomid(room_id=3, image="d_room3_1.jpg")
+    # dao.add_room_image_by_roomid(room_id=3, image="d_room3_2.jpg")
+    # dao.add_room_image_by_roomid(room_id=3, image="d_room3_3.jpg")
+    #
+    # dao.add_room_image_by_roomid(room_id=4, image="d_room1_1.jpg")
+    # dao.add_room_image_by_roomid(room_id=4, image="d_room1_2.jpg")
+    # dao.add_room_image_by_roomid(room_id=4, image="d_room1_3.jpg")
+    #
+    # dao.add_room_image_by_roomid(room_id=5, image="d_room2_1.jpg")
+    # dao.add_room_image_by_roomid(room_id=5, image="d_room2_2.jpg")
+    #
+    # dao.add_room_image_by_roomid(room_id=6, image="d_room3_1.jpg")
+    #
+    # dao.add_room_image_by_roomid(room_id=7, image="s_room1_1.jpg")
+    # dao.add_room_image_by_roomid(room_id=7, image="s_room1_2.jpg")
+    # dao.add_room_image_by_roomid(room_id=7, image="s_room1_3.jpg")
+    #
+    # dao.add_room_image_by_roomid(room_id=8, image="s_room2_1.jpg")
+    # dao.add_room_image_by_roomid(room_id=8, image="s_room2_2.jpg")
+    #
+    # dao.add_room_image_by_roomid(room_id=9, image="s_room3_1.jpg")
+    # dao.add_room_image_by_roomid(room_id=9, image="s_room3_2.jpg")
+
 
     thread = threading.Thread(target=update_vacant_room)
     thread.start()
@@ -43,11 +75,17 @@ def homePage():
     rooms = dao.load_room_by_nameroomtype(name_room_type=name_room_type if name_room_type is not None else "Standard Room")
     room_type = dao.get_room_type_by_name(name=name_room_type)
 
+    room_image = dao.load_room_image_by_roomid(room_id=room.id)
+    room_images = []
+
+    for room_ in rooms:
+        room_images.append(dao.load_room_image_by_roomid(room_id=room_.id))
+
     cart = None
     if current_user.is_authenticated:
         cart = dao.get_cart_by_userid(current_user.id)
 
-    return render_template("client/show.html", room_types=room_types, room=room, room_type=room_type, rooms=rooms, cart=cart)
+    return render_template("client/show.html", room_types=room_types, room=room, room_type=room_type, rooms=rooms, cart=cart, room_image=room_image, room_images=room_images)
 
 @app.route('/login', methods=['get'])
 def loginPage():
@@ -98,14 +136,16 @@ def cart_page():
         cart_details = dao.load_cart_detail_by_cartid(cart.user_id)
         rooms = []
         room_types = []
+        room_images = []
         for cart_detail in cart_details:
             rooms.append(dao.get_room_by_id(cart_detail.room_id))
         for room in rooms:
             room_types.append(dao.get_room_type_by_id(room.room_type_id))
+            room_images.append(dao.load_room_image_by_roomid(room.id))
     else:
         return redirect("/")
 
-    return render_template("client/cart.html", cart_details=cart_details, rooms=rooms, room_types=room_types, cart=cart)
+    return render_template("client/cart.html", cart_details=cart_details, rooms=rooms, room_types=room_types, cart=cart, room_images=room_images)
 
 @app.route("/cart", methods=['post'])
 def cart_process():
@@ -144,7 +184,8 @@ def booking_process():
 
         room = dao.get_room_by_id(id=room_id)
         room_type = dao.get_room_type_by_id(id=room.room_type_id)
-        return render_template("/client/booking.html", room=room, cart_detail_id=cart_detail_id, room_type=room_type, cart=cart)
+        room_image = dao.load_room_image_by_roomid(room_id=room.id)
+        return render_template("/client/booking.html", room=room, cart_detail_id=cart_detail_id, room_type=room_type, cart=cart, room_image=room_image)
     else:
         return redirect("/")
 
@@ -155,8 +196,9 @@ def booking_page():
         room = dao.get_room_by_id(id=room_id)
         room_type = dao.get_room_type_by_id(id=room.room_type_id)
         cart = dao.get_cart_by_userid(current_user.id)
+        room_image = dao.load_room_image_by_roomid(room_id=room.id)
 
-        return render_template("/client/booking.html", room=room, room_type=room_type, cart=cart)
+        return render_template("/client/booking.html", room=room, room_type=room_type, cart=cart, room_image=room_image)
 
 @app.route("/completed-booking", methods=['post'])
 def process_booking():

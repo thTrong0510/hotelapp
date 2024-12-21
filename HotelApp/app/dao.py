@@ -72,6 +72,14 @@ def update_vacant_room_by_id(room_id, vacant_room):
     room.vacant_room = vacant_room
     db.session.commit()
 
+def add_room_image_by_roomid(room_id, image):
+    room_image = RoomImage(room_id=room_id, image=image)
+    db.session.add(room_image)
+    db.session.commit()
+
+def load_room_image_by_roomid(room_id):
+    return RoomImage.query.filter_by(room_id=room_id).all()
+
 def add_cart(user_id, total_quantity=0):
     cart = Cart(user_id=user_id, total_quantity=total_quantity)
     db.session.add(cart)

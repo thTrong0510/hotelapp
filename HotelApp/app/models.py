@@ -75,7 +75,7 @@ class Room(db.Model):
 
 class RoomImage(db.Model):
     id = Column(db.Integer, primary_key=True, autoincrement=True)
-    image_url = Column(db.String(255), nullable=False)  # đường dẫn ảnh
+    image = Column(db.String(255), nullable=False)  # đường dẫn ảnh
     created_at = Column(db.DateTime, default=db.func.current_timestamp())
     room_id = Column(db.Integer, db.ForeignKey(Room.id), nullable=False)  # khóa ngoại
 
