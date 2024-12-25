@@ -29,13 +29,12 @@
                                                 <input class="form-control" id="password" type="password" placeholder="password" name="password"/>
                                                 <label for="password">Password</label>
                                             </div>
-                                            <div class="form-check mb-3">
-                                                <input class="form-check-input" id="inputRememberPassword" type="checkbox" value="" />
-                                                <label class="form-check-label" for="inputRememberPassword">Remember Password</label>
+                                            <div id="check_login" style="display: none;" class="form-floating mb-3 alert alert-warning">
+                                                Something is wrong, Please Double-check!
                                             </div>
                                             <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                                <a class="small" href="password.html">Forgot Password?</a>
-                                                <button type="submit" class="btn btn-primary">Login</button>
+                                                <a class="small"></a>
+                                                <button id="checkAccount" type="submit" class="btn btn-primary" data-check-account="{{ check_account }}" data-status-account="{{ status_account }}">Login</button>
                                             </div>
                                         </form>
                                     </div>
@@ -65,5 +64,6 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="../../static/client/register_login/js/scripts.js"></script>
+        <script src="../../static/client/register_login/js/main.js"></script>
     </body>
 </html>

@@ -1,0 +1,67 @@
+{% extends 'layout/base_staff.html' %}
+
+{% block content %}
+
+<h1 class="mt-4">Manage Customer</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a href="/staff/customer">Dashboard</a></li>
+    <li class="breadcrumb-item active">Customer</li>
+</ol>
+<div class="mt-2">
+    <div class="row">
+        <div class="col-md-12 col-12 mx-auto">
+            <hr>
+            <div class="table-responsive tbody-container">
+                <table id="tableBookedStaff" class="table" style="position: relative;">
+                    <thead style="position: sticky; top: 0; background-color: #fff; z-index: 1;">
+                    <tr>
+                        <th scope="col" style="height: auto;">Issue invoice</th>
+                        <th scope="col" style="height: auto;">Customer Name</th>
+                        <th scope="col" style="height: auto;">Room Name</th>
+                        <th scope="col" style="height: auto;">Room Type</th>
+                        <th scope="col" style="height: auto;">Price</th>
+                        <th scope="col" style="height: auto;">Check-in Date</th>
+                        <th scope="col" style="height: auto;">Check-out Date</th>
+                    </tr>
+                    </thead>
+                    <tbody class="tbody-container">
+                        {% if books %}
+                            {% for book in books %}
+                            <tr>
+                                <td>
+                                 <form action="/staff/customer/booked/export_book" method="post" class="mb-0 mt-3 center-button d-flex justify-content-left align-items-end">
+                                    <input type="hidden" name="post_export_book" value='{ "book_id":"{{ book.id }}" ,"customer_name":"{{ customer.name }}", "customer_email":"{{ customer.email }}", "customer_phone":"{{ book.customer_phone }}", "number_of_foreigners":"{{ book_details[loop.index0].number_of_foreigners }}", "number_of_customer":"{{ book_details[loop.index0].quantity }}","room_name":"{{ rooms[loop.index0].name }}", "quantity_room":"{{ book_details[loop.index0].quantity }}", "room_name_type":"{{ room_types[loop.index0].name }}", "check_in_date":"{{ book_details[loop.index0].check_in_date }}", "check_out_date":"{{ book_details[loop.index0].check_out_date }}", "price":"{{ book_details[loop.index0].total_price }}"}'>
+                                    <button type="submit" class="bookedBtn btn btn-success border border-secondary rounded-pill px-4 py-2 mb-4 mx-0">receipt</button>
+                                 </form>
+                                </td>
+                                <td>
+                                    <p class="mb-0 mt-4">{{ customer.name }}</p>
+                                </td>
+                                 <td>
+                                    <p class="mb-0 mt-4">{{ rooms[loop.index0].name }}</p>
+                                </td>
+                                <td>
+                                    <p class="mb-0 mt-4">{{ room_types[loop.index0].name }}</p>
+                                </td>
+                                <td>
+                                    <p class="mb-0 mt-4 price">{{ book_details[loop.index0].total_price }}</p>
+                                </td>
+                                <td>
+                                    <p class="mb-0 mt-4 checkIn_">{{ book_details[loop.index0].check_in_date }}</p>
+                                </td>
+                                <td>
+                                    <p class="mb-0 mt-4 checkOut_">{{ book_details[loop.index0].check_out_date }}</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <a href="/staff/customer" class="btn btn-success mt-2">Back</a>
+            <hr>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

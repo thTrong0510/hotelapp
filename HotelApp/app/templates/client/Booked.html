@@ -34,7 +34,7 @@
                                 <p class="mb-0 mt-4">{{ room_types[loop.index0].name }}</p>
                             </td>
                             <td>
-                                <p class="mb-0 mt-4">{{ book_details[loop.index0].total_price }}</p>
+                                <p class="mb-0 mt-4 price">{{ book_details[loop.index0].total_price }}</p>
                             </td>
                             {% if book.accurate_checkout_date == book_details[loop.index0].check_out_date %}
                             <td>

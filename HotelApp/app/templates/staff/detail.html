@@ -1,0 +1,36 @@
+{% extends 'layout/base_staff.html' %}
+
+{% block content %}
+
+<h1 class="mt-4">Manage Customer</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a href="/staff/customer">Dashboard</a></li>
+    <li class="breadcrumb-item active">Customer</li>
+</ol>
+<div class="mt-2">
+    <div class="row">
+        <div class="col-md-10 col-12 mx-auto">
+            <hr>
+            <div class="card mx-auto" style="width: 80%">
+                <div class="card-header">
+                    Customer Information
+                </div>
+                <ul id="ulDetail" class="list-group list-group-flush">
+                    <li class="list-group-item">ID: {{ customer.id }}</li>
+                    <li class="list-group-item">Full Name: {{ customer.name }}</li>
+                    <li class="list-group-item">Email: {{ customer.email }}</li>
+                    <li class="list-group-item">User Type: {{ customer.user_type }}</li>
+                    {% if customer.status %}
+                    <li class="list-group-item">Status Of Account: The account is not locked.</li>
+                    {% else %}
+                    <li class="list-group-item">Status Of Account: The account has been locked.</li>
+                    {% endif %}
+                </ul>
+            </div>
+            <a href="/staff/customer" class="btn btn-success mt-2">Back</a>
+            <hr>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

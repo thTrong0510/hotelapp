@@ -13,19 +13,21 @@
                         <div class="border rounded">
                             <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
                                 <div class="carousel-inner" role="listbox">
-                                    {% for image in room_image %}
-                                    {% if loop.index0 == 0 %}
-                                    <div class="carousel-item active rounded">
-                                        <img src="../../static/client/images/{{ image.image }}" class="img-fluid w-100 h-100 bg-secondary rounded"
-                                             alt="First slide">
-                                    </div>
-                                    {% else %}
-                                    <div class="carousel-item rounded">
-                                        <img src="../../static/client/images/{{ image.image }}" class="img-fluid w-100 h-100 rounded"
-                                             alt="Second slide">
-                                    </div>
+                                    {% if room_image %}
+                                        {% for image in room_image %}
+                                            {% if loop.index0 == 0 %}
+                                            <div class="carousel-item active rounded">
+                                                <img src="../../static/client/images/{{ image.image }}" class="img-fluid w-100 h-100 bg-secondary rounded"
+                                                     alt="First slide">
+                                            </div>
+                                            {% else %}
+                                            <div class="carousel-item rounded">
+                                                <img src="../../static/client/images/{{ image.image }}" class="img-fluid w-100 h-100 rounded"
+                                                     alt="{{ image.image }}">
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
                                     {% endif %}
-                                    {% endfor %}
                                 </div>
                                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselId"
                                         data-bs-slide="prev">
@@ -43,7 +45,7 @@
                     <div class="col-lg-6">
                         <h4 class="fw-bold mb-3">{{ room.name }}</h4>
                         <p class="mb-3">{{ room_type.name }}</p>
-                        <h5 class="fw-bold mb-3">{{ room.price }}$</h5>
+                        <h5 class="fw-bold mb-3 price">{{ room.price }}</h5>
                         <div class="d-flex mb-4" id="div_vacant_room" data-vacant-room="{{ room.vacant_room }}">
                            Available rooms: {{ room.vacant_room }}
                         </div>
@@ -144,15 +146,20 @@
             <div class="col-lg-4 col-xl-3">
                 <div class="row g-4 fruite">
                     <div class="col-lg-12">
-                        <div class="mb-4">
-                            <form action="/search" method="post" class="input-group w-100 mx-auto d-flex">
-                                <input type="search" id="search" name="search" class="form-control p-3" placeholder="keywords"
-                                   aria-describedby="search-icon-1">
-                                <button type="submit" id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></button>
-                            </form>
+<!--                        <div class="mb-4 d-flex align-items-center">-->
+<!--                            <input type="search" id="input-search-room" name="value_search_room" class="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1">-->
+<!--                            <a href="" id="a-search-room" class="input-group-text p-3"><i class="fa fa-search"></i></a>-->
+<!--                        </div>-->
+
+                        <div class="modal-body d-flex align-items-center">
+                            <div class="input-group mx-auto d-flex">
+                                <input type="search" id="input-search-room" name="value_search_room"  class="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1">
+                                <a id="a-search-room" class="input-group-text p-3"><i class="fa fa-search"></i></a>
+                            </div>
                         </div>
+
                         <div class="mb-4">
-                            <h4>Categories</h4>
+                            <h4>Room Type</h4>
                             <ul class="list-unstyled fruite-categorie">
                                 {% for type in room_types %}
                                 <li>
@@ -193,7 +200,7 @@
                         <h4>{{ r.name }}</h4>
                         <p>{{ r.short_desc }}</p>
                         <div class="d-flex justify-content-between flex-lg-wrap">
-                            <p class="text-dark fs-5 fw-bold">$4.99 / kg</p>
+                            <p class="text-dark fs-5 price">{{ r.price }}</p>
                             <a href="/?type={{ room_type.name }}&capacity={{ r.capacity }}" class="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"><i
                                     class="fa fa-shopping-bag me-2 text-primary"></i>Focus</a>
                         </div>

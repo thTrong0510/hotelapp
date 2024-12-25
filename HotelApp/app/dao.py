@@ -1,4 +1,5 @@
-from HotelApp.app.models import User, RoomType, Cart, CartDetail, ConfigParameters, Room, RoomImage, BookDetail, Book
+from HotelApp.app.models import User, RoomType, Cart, CartDetail, ConfigParameters, Room, RoomImage, BookDetail, Book, \
+    UserRole
 from HotelApp.app import app, db
 import hashlib
 import cloudinary.uploader
@@ -6,20 +7,42 @@ import cloudinary.uploader
 def get_user_by_id(user_id):
     return User.query.get(user_id)
 
-def add_user(name, password, email, avatar=None):
+def add_user(name, password, email):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-
     u = User(name=name, password=password, email=email)
-    if avatar:
-        res = cloudinary.uploader.upload(avatar)
-        u.avatar = res.get('secure_url')
     db.session.add(u)
+    db.session.commit()
+
+def add_staff(name, password, email, user_role=UserRole.STAFF):
+    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
+    u = User(name=name, password=password, email=email, user_role=user_role)
+    db.session.add(u)
+    db.session.commit()
+
+def load_user():
+    return User.query.all()
+
+def load_user_by_role(userRole):
+    return User.query.filter_by(user_role=userRole).all()
+
+def load_user_by_email(email):
+    return User.query.filter_by(email=email).all()
+
+def load_user_by_name(name):
+    return User.query.filter_by(name=name).all()
+
+def update_status_user_by_id(user_id, status):
+    user = User.query.filter_by(id=user_id).first()
+    user.status = status
     db.session.commit()
 
 def add_config_parameters(rev_period_checkin, surcharge):
     config = ConfigParameters(rev_period_checkin=rev_period_checkin, surcharge=surcharge)
     db.session.add(config)
     db.session.commit()
+
+def load_config():
+    return ConfigParameters.query.all()
 
 def add_room_type(name, price, quantity, config_id):
     room_type = RoomType(name=name, price=price, quantity=quantity, config_id=config_id)
@@ -41,10 +64,13 @@ def get_room_type_by_name(name="Standard Room"):
         room_type = RoomType.query.filter_by(name=name)
     return room_type.first()
 
-def add_room(name, description, short_desc, price, capacity, quantity, vacant_room, active, room_type_id):
-    room = Room(name=name, description=description, short_desc=short_desc, price=price, capacity=capacity, quantity=quantity, vacant_room=vacant_room, active=active, room_type_id=room_type_id)
+def add_room(name, description, short_desc, price, capacity, quantity, vacant_room, room_type_id):
+    room = Room(name=name, description=description, short_desc=short_desc, price=price, capacity=capacity, quantity=quantity, vacant_room=vacant_room, room_type_id=room_type_id)
     db.session.add(room)
     db.session.commit()
+
+def load_all_room():
+    return Room.query.all()
 
 def load_room_by_nameroomtype(name_room_type=None):
     rooms = Room.query
@@ -63,6 +89,9 @@ def get_room_by_namecapacity(capacity=1, name_room_type="Standard Room"):
     rooms = Room.query.filter_by(room_type_id=room_type_id)
     room = rooms.filter_by(capacity=capacity)
     return room.first()
+
+def get_room_by_nameRoomTypeId(name, room_type_id):
+    return Room.query.filter_by(name=name, room_type_id=room_type_id).first()
 
 def get_room_by_id(id):
     return Room.query.filter_by(id=id).first()
@@ -115,6 +144,9 @@ def count_cart_detail_by_cartid(cart_id):
 
 def load_book_by_userid(user_id):
     return Book.query.filter_by(user_id=user_id).all()
+
+def load_all_book():
+    return Book.query.all()
 
 def add_book(user_id, customer_phone, accurate_checkout_date):
     book = Book(user_id=user_id, customer_phone=customer_phone, accurate_checkout_date=accurate_checkout_date)
