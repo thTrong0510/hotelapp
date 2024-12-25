@@ -26,4 +26,9 @@ if(tableBook) {
         rows[i].querySelectorAll('td')[6].querySelector('p').textContent = checkOutDate.replace('00:00:00', '');
     }
 
+    priceBookeds = document.querySelectorAll('.priceBooked')
+    for(let i = 0; i < priceBookeds.length; i++) {
+        priceBookeds[i].textContent = (priceBookeds[i].textContent * 1000).toLocaleString('vi-VN');
+    }
+
 }

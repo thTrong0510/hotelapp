@@ -1,6 +1,9 @@
 formSudmit = document.getElementById('bookingForm');
 const checkInInput = document.getElementById('checkIn');
 const checkOutInput = document.getElementById('checkOut');
+if(document.getElementById('price_booking')) {
+    document.getElementById('price_booking').value = (document.getElementById('price_booking').value * 1000).toLocaleString('vi-VN');
+}
 if(formSudmit) {
     formSudmit.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -106,8 +109,10 @@ function calculatePrice() {
         totalPrice = totalPrice * (dates + 1);
     }
 
+    totalPrice = totalPrice * 1000;
+
     // Gán giá trị mới vào trường price
-    priceInput.value = totalPrice.toFixed(2); // Giới hạn 2 chữ số thập phân
+    priceInput.value = totalPrice.toLocaleString('vi-VN'); // Giới hạn 2 chữ số thập phân
 }
 
 // Gắn sự kiện input để tính lại giá khi quantity hoặc factor thay đổi
