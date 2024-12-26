@@ -41,6 +41,9 @@ def add_config_parameters(rev_period_checkin, surcharge):
     db.session.add(config)
     db.session.commit()
 
+def get_config_by_id(config_id):
+    return ConfigParameters.query.filter_by(id=config_id).first()
+
 def load_config():
     return ConfigParameters.query.all()
 
@@ -148,8 +151,8 @@ def load_book_by_userid(user_id):
 def load_all_book():
     return Book.query.all()
 
-def add_book(user_id, customer_phone, accurate_checkout_date):
-    book = Book(user_id=user_id, customer_phone=customer_phone, accurate_checkout_date=accurate_checkout_date)
+def add_book(user_id, cccd, accurate_checkout_date):
+    book = Book(user_id=user_id, cccd=cccd, accurate_checkout_date=accurate_checkout_date)
     db.session.add(book)
     db.session.commit()
 

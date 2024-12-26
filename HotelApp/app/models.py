@@ -1,7 +1,7 @@
 from email.policy import default
 
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float, Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from HotelApp.app import db, app
 from enum import Enum as RoleEnum
 from flask_login import UserMixin
@@ -70,6 +70,7 @@ class Room(db.Model):
     room_type_id = Column(Integer, ForeignKey(RoomType.id), nullable=False)
     book_details = relationship('BookDetail', backref='room', lazy=True)
     cart_details = db.relationship('CartDetail', backref='room', lazy=True)
+    room_image = db.relationship('RoomImage', backref='room', lazy=True)
 
 class RoomImage(db.Model):
     id = Column(db.Integer, primary_key=True, autoincrement=True)
@@ -79,7 +80,7 @@ class RoomImage(db.Model):
 
 class Book(db.Model):
     id = Column(db.Integer, primary_key=True, autoincrement=True)
-    customer_phone = Column(db.String(100), nullable=False)
+    cccd = Column(db.String(100), nullable=False)
     booking_date = Column(db.DateTime, default=db.func.current_timestamp())
     accurate_checkout_date = Column(db.DateTime, nullable=False)
     status = Column(Boolean, default=True)

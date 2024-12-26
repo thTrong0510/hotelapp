@@ -61,7 +61,7 @@ def homePage():
     #
     # dao.add_room_image_by_roomid(room_id=9, image="s_room3_1.jpg")
     # dao.add_room_image_by_roomid(room_id=9, image="s_room3_2.jpg")
-
+    #
     # dao.add_staff("Thien Vy", "abc", "thienvy@gmail.com")
 
     thread = threading.Thread(target=update_vacant_room)
@@ -216,7 +216,9 @@ def booking_process():
         room = dao.get_room_by_id(id=room_id)
         room_type = dao.get_room_type_by_id(id=room.room_type_id)
         room_image = dao.load_room_image_by_roomid(room_id=room.id)
-        return render_template("/client/booking.html", room=room, cart_detail_id=cart_detail_id, room_type=room_type, cart=cart, room_image=room_image)
+        config = dao.get_config_by_id(config_id=room_type.config_id)
+
+        return render_template("/client/booking.html", room=room, cart_detail_id=cart_detail_id, room_type=room_type, cart=cart, room_image=room_image, config=config)
     else:
         return redirect("/")
 
@@ -228,8 +230,9 @@ def booking_page():
         room_type = dao.get_room_type_by_id(id=room.room_type_id)
         cart = dao.get_cart_by_userid(current_user.id)
         room_image = dao.load_room_image_by_roomid(room_id=room.id)
+        config = dao.get_config_by_id(config_id=room_type.config_id)
 
-        return render_template("/client/booking.html", room=room, room_type=room_type, cart=cart, room_image=room_image)
+        return render_template("/client/booking.html", room=room, room_type=room_type, cart=cart, room_image=room_image, config=config)
 
 @app.route("/completed-booking", methods=['post'])
 def process_booking():
@@ -237,7 +240,7 @@ def process_booking():
     room_id = data['room_id']
     user_id = current_user.id
 
-    dao.add_book(user_id=user_id, customer_phone=data['customer_phone'], accurate_checkout_date=data['checkOut'])
+    dao.add_book(user_id=user_id, cccd=data['customer_cccd'], accurate_checkout_date=data['checkOut'])
     book = dao.get_last_book()
     dao.add_book_detail(book_id=book.id, room_id=room_id, check_in_date=data['checkIn'], check_out_date=data['checkOut'], total_price=data['price_booking'], quantity=data['quantity_booking'], number_of_foreigners=data['number_foreigners'], special_request=data['specialRequests'])
 
@@ -254,10 +257,12 @@ def booked_page():
     book_details = []
     rooms = []
     room_types = []
+    configs = []
     for book in books:
         book_details.append(dao.get_book_details_by_bookid(book.id))
         rooms.append(dao.get_room_by_id(book_details[len(book_details) - 1].room_id))
         room_types.append(dao.get_room_type_by_id(rooms[len(rooms) - 1].room_type_id))
+
     cart = dao.get_cart_by_userid(current_user.id)
     return render_template("client/booked.html", cart=cart, books=books, book_details=book_details, rooms=rooms, room_types=room_types)
 
@@ -318,7 +323,7 @@ def checkout_page():
 
 # =================== STAFF =========================#
 def authenticated_staff_account():
-    if not current_user.is_authenticated or not current_user.user_role == UserRole.STAFF:
+    if not current_user.is_authenticated or not ((current_user.user_role == UserRole.STAFF) or not (current_user.user_role == UserRole.ADMIN)):
         return redirect("/login")
 
 @app.route('/staff/customer', methods=['get'])
@@ -349,6 +354,7 @@ def staff_booked_customer_page():
     book_details = []
     rooms = []
     room_types = []
+    configs = []
     for book in books:
         book_details.append(dao.get_book_details_by_bookid(book.id))
         rooms.append(dao.get_room_by_id(book_details[len(book_details) - 1].room_id))
@@ -362,32 +368,64 @@ def export_book_process():
     if auth_result:
         return auth_result
     data = json.loads(request.form.get("post_export_book"))
+    name = data.get('customer_name')
+    email = data.get('customer_email')
+    cccd = data.get('customer_cccd')
+    room_name = data.get('room_name')
+    numOfRooms = data.get('quantity_room')
+    numOfCustomer = data.get('number_of_customer')
+    name_room_type = data.get('room_name_type')
+    total_price =  f"{float(data.get('price')):,.3f}"
+
+    check_in_date = data.get('check_in_date').split(' ')[0]
+    check_out_date = data.get('check_out_date').split(' ')[0]
+
+    data_file = [
+        name,
+        email,
+        cccd,
+        room_name,
+        numOfRooms,
+        numOfCustomer,
+        name_room_type,
+        check_in_date,
+        check_out_date,
+        total_price
+    ]
 
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
 
-    data['check_in_date'] = data.get('check_in_date').split(' ')[0]
-    data['check_out_date'] = data.get('check_out_date').split(' ')[0]
+    # Tiêu đề
+    pdf.cell(0, 10, "T-T-T Hotel Invoice", ln=True, align="C")
+    pdf.cell(0, 10, "", ln=True, align="C")
 
-    # Thêm nội dung hóa đơn vào từng dòng
-    pdf.cell(0, 10, f"T-T-T Hotel Invoice", ln=True)
-    pdf.cell(0, 10, f"Full Name: {data.get('customer_name')}", ln=True)
-    pdf.cell(0, 10, f"Email: {data.get('customer_email')}", ln=True)
-    pdf.cell(0, 10, f"Phone Number: {data.get('customer_phone')}", ln=True)
-    pdf.cell(0, 10, f"Room Name: {data.get('room_name')}", ln=True)
-    pdf.cell(0, 10, f"Number Of rooms: {data.get('quantity_room')}", ln=True)
-    pdf.cell(0, 10, f"Number Of Customers: {data.get('number_of_customer')}", ln=True)
+    # Danh sách nhãn và giá trị
+    labels = [
+        "Full Name:",
+        "Email:",
+        "CCCD:",
+        "Room Name:",
+        "Number Of rooms:",
+        "Number Of Customers:",
+        "Name Of Room Type:",
+        "Check In Date:",
+        "Check Out Date:",
+        "Total Price:"
+    ]
 
     if(int(data.get('number_of_foreigners')) > 0):
-        pdf.cell(0, 10, f"Number Of Foreigners: {data.get('number_of_foreigners')}", ln=True)
+        data_file.append(data.get('number_of_foreigners'))
+        labels.append("Number Of Foreigners")
 
-    pdf.cell(0, 10, f"Room Type: {data.get('room_name_type')}", ln=True)
-    pdf.cell(0, 10, f"Check-In Date: {data.get('check_in_date')}", ln=True)
-    pdf.cell(0, 10, f"Check-Out Date: {data.get('check_out_date')}", ln=True)
-    pdf.cell(0, 10, f"Price: {data.get('price')}", ln=True)
+    # In từng hàng
+    for i in range(len(labels)):
+        pdf.cell(30, 10, labels[i], ln=False)  # Nhãn ở đầu dòng, cố định chiều rộng
+        pdf.cell(0, 10, data_file[i], ln=True, align="C")  # Giá trị căn giữa
 
-    pdf_file = "invoice" + "_" + data.get('book_id') + "_" + "".join(data.get('customer_name').split(' ')) + ".pdf"
+    # Lưu file
+    pdf_file = f"invoice_{data.get('book_id')}_{''.join(data.get('customer_name').split(' '))}.pdf"
     pdf.output(pdf_file)
 
     return send_file(pdf_file, as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

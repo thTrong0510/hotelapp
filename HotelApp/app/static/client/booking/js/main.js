@@ -8,10 +8,10 @@ if(formSudmit) {
     formSudmit.addEventListener('submit', function(event) {
         event.preventDefault();
         // Ngăn form submit mặc định
-        const phoneInput = document.getElementById('customer_phone');
-        const phoneValue = phoneInput.value.trim();
-        const phoneErrorElement = document.getElementById('phoneError');
-        const phoneRegex = /^(?:\+84|0)(?:[3|5|7|8|9][0-9]{8}|(?:1[1|6|8|9]|2[1-9]|4[2-9])[0-9]{7})$/;
+        const CCCDInput = document.getElementById('customer_cccd');
+        const CCCDValue = CCCDInput.value.trim();
+        const CCCDErrorElement = document.getElementById('cccdError');
+        const CCCDRegex = /^0\d{11}$/;
 
         const checkInError = document.getElementById('checkInError');
         const checkOutError = document.getElementById('checkOutError');
@@ -32,17 +32,17 @@ if(formSudmit) {
         if (checkOutInput.classList.contains('error')) {
             checkOutInput.classList.remove('error');
         }
-        if (phoneInput.classList.contains('error')) {
-            phoneInput.classList.remove('error');
+        if (CCCDInput.classList.contains('error')) {
+            CCCDInput.classList.remove('error');
         }
 
-        phoneErrorElement.textContent = '';
+        CCCDErrorElement.textContent = '';
         checkInError.textContent = '';
         checkOutError.textContent = '';
 
-        if (!phoneRegex.test(phoneValue)) {
-            phoneInput.classList.add('error');  // Thêm lớp error vào input
-            phoneErrorElement.textContent = 'Invalid phone number.';  // Hiển thị thông báo lỗi
+        if (!CCCDRegex.test(CCCDValue)) {
+            CCCDInput.classList.add('error');  // Thêm lớp error vào input
+            CCCDErrorElement.textContent = 'Invalid CCCD number.';  // Hiển thị thông báo lỗi
         }
 
         // Check-in date must not be before today
@@ -63,15 +63,16 @@ if(formSudmit) {
         }
 
         // Check-out date must be within 28 days after check-in
+        revPeriodCheckin = parseFloat(document.getElementById('price_booking').dataset.reversePeriodCheckin) || 0;
         const maxCheckOutDate = new Date(checkInDate);
-        maxCheckOutDate.setDate(checkInDate.getDate() + 28);
+        maxCheckOutDate.setDate(checkInDate.getDate() + revPeriodCheckin);
 
         if (checkOutDate > maxCheckOutDate) {
             checkOutInput.classList.add('error');
-            checkOutError.textContent = 'Check-out date must not be more than 28 days after check-in.';
+            checkOutError.textContent = 'Check-out date must not be more than ' + revPeriodCheckin + ' days after check-in.';
         }
 
-        if (checkInInput.classList.contains('error') || checkOutInput.classList.contains('error') || phoneInput.classList.contains('error')) {
+        if (checkInInput.classList.contains('error') || checkOutInput.classList.contains('error') || CCCDInput.classList.contains('error')) {
             return;
         }
 
@@ -85,7 +86,7 @@ const quantityInput = document.getElementById('quantity_booking');
 const numGuestInput = document.getElementById('numGuests_booking');
 const numberOfForeignersInput = document.getElementById('number_foreigners');
 
-// Hàm tính giá
+// Hàm tính giáreverse-period-checkin
 function calculatePrice() {
     const basePrice = parseFloat(priceInput.dataset.basePrice) || 0;
     const roomCountMultiplier = parseFloat(priceInput.dataset.roomCountMultiplier) || 0;
