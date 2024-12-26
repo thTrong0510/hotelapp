@@ -3,13 +3,15 @@ from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import quote
 from flask_login import LoginManager
 import cloudinary
+from flask_babel import Babel
+from flask_admin import Admin
 
 app = Flask(__name__)
 app.secret_key = 'HJGFGHF^&%^&&*^&*YUGHJGHJF^%&YYHBhjh'
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:%s@localhost/hoteldb?charset=utf8mb4" % quote('Thanhtrong@0510')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-app.config["PAGE_SIZE"] = 6
 
+babel = Babel(app)
 db = SQLAlchemy(app)
 login = LoginManager(app)
 

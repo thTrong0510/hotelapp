@@ -1,0 +1,100 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{% if current_user.is_authenticated %}
+<h1 class="text-primary">CHÀO MỪNG ĐẾN TRANG QUẢN TRỊ!!!</h1>
+<div class="row">
+    <div class="col-md-7 col-12">
+        <table class="table">
+            <tr>
+                <th>Mã Loại Phòng</th>
+                <th>Tên Loại Phòng</th>
+                <th>Số Lượng Phòng</th>
+            </tr>
+            {% for s in stats %}
+            <tr>
+                <td>{{ s[0] }}</td>
+                <td>{{ s[1] }}</td>
+                <td>{{ s[2] }} </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="col-md-5 col-12">
+        <canvas id="myChart"></canvas>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let data = [];
+    let labels = [];
+    {% for s in stats %}
+    data.push({{ s[2] }});
+    labels.push('{{ s[1] }}')
+    {% endfor %}
+    function draw(ctx, data, labels) {
+    new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: '# Số Phòng',
+                data: data,
+                borderWidth: 1,
+                backgroundColor: ['red', 'green', 'blue', 'pink', 'gold']
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+    }
+
+    window.onload = function() {
+         const ctx = document.getElementById('myChart');
+        draw(ctx, data, labels);
+
+    }
+</script>
+{% else %}
+<form method="post" action="/login-admin">
+<body class="bg-primary">
+        <div id="layoutAuthentication">
+            <div id="layoutAuthentication_content">
+                <main>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-5">
+                                <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Login</h3></div>
+                                    <div class="card-body">
+                                        <form method="POST" action="/login">
+                                            <div class="form-floating mb-3">
+                                                <input class="form-control" id="email" type="email" placeholder="name@example.com" name="email"/>
+                                                <label for="email">Email address</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input class="form-control" id="password" type="password" placeholder="password" name="password"/>
+                                                <label for="password">Password</label>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                                                <button type="submit" class="btn btn-primary">Login</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="../../static/client/register_login/js/scripts.js"></script>
+    </body>
+</form>
+{% endif %}
+{% endblock %}

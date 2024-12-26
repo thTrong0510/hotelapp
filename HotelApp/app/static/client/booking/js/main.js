@@ -104,7 +104,7 @@ function calculatePrice() {
         }
     }
     if(numberOfForeigners > 0) {
-        totalPrice = totalPrice + totalPrice * foreignMultiplier;
+        totalPrice = totalPrice * foreignMultiplier;
     }
     if(dates > 0) {
         totalPrice = totalPrice * (dates + 1);

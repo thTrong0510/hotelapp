@@ -6,6 +6,7 @@ from flask import render_template, request, redirect, send_file
 from HotelApp.app import app, login
 import dao
 from flask_login import login_user, logout_user, current_user
+from HotelApp.app import admin
 
 from HotelApp.app.dao import get_room_by_id
 from HotelApp.app.models import UserRole
@@ -13,56 +14,6 @@ from HotelApp.app.models import UserRole
 
 @app.route('/')
 def homePage():
-    # dao.add_config_parameters(28, 100)
-    #
-    # dao.add_room_type("Standard Room", 10, 10, 1)
-    # dao.add_room_type("Deluxe Room", 20, 10, 1)
-    # dao.add_room_type("Suite", 30, 10, 1)
-    #
-    # dao.add_room("Single Room", "A Single Room in a hotel is designed to accommodate one guest, making it ideal for solo travelers or business guests. The room typically features a single bed (twin size) or sometimes a small double bed, depending on the hotel's standard. The average room size is around 15-20 square meters, providing a compact yet comfortable space.", "A Single Room accommodates 1 guest with a single bed, ideal for solo travelers, offering basic amenities.", 10, 1, 4,4, 1)
-    # dao.add_room("Double Room", "A Double Room in a hotel is designed to accommodate two guests comfortably. It typically features one double bed or sometimes a queen-size bed, making it ideal for couples or travelers who prefer to share a bed. The room size is usually around 20-25 square meters, providing enough space for relaxation.", "A Double Room accommodates 2 guests with one double or queen-size bed, ideal for couples or friends.", 20,2,3,3, 1)
-    # dao.add_room("Triple Room", "A Triple Room in a hotel is designed to accommodate three guests comfortably. It typically features either one double bed and one single bed or three single beds, depending on the hotel's layout. The room is spacious, usually ranging from 25 to 35 square meters, and comes equipped with essential amenities such as a private bathroom, air conditioning, a flat-screen TV, free Wi-Fi, a minibar, and tea/coffee-making facilities.", "A Triple Room accommodates 3 guests with 1 double and 1 single bed or 3 single beds, ideal for families or friends.", 30, 3,3, 3, 1)
-    #
-    # dao.add_room("Single Room", "A Single Room in a hotel is designed to accommodate one guest, making it ideal for solo travelers or business guests. The room typically features a single bed (twin size) or sometimes a small double bed, depending on the hotel's standard. The average room size is around 15-20 square meters, providing a compact yet comfortable space.", "A Single Room accommodates 1 guest with a single bed, ideal for solo travelers, offering basic amenities.", 10,1,4,4,  2)
-    # dao.add_room("Double Room", "A Double Room in a hotel is designed to accommodate two guests comfortably. It typically features one double bed or sometimes a queen-size bed, making it ideal for couples or travelers who prefer to share a bed. The room size is usually around 20-25 square meters, providing enough space for relaxation.", "A Double Room accommodates 2 guests with one double or queen-size bed, ideal for couples or friends.", 20, 2,3,3,  2)
-    # dao.add_room("Triple Room", "A Triple Room in a hotel is designed to accommodate three guests comfortably. It typically features either one double bed and one single bed or three single beds, depending on the hotel's layout. The room is spacious, usually ranging from 25 to 35 square meters, and comes equipped with essential amenities such as a private bathroom, air conditioning, a flat-screen TV, free Wi-Fi, a minibar, and tea/coffee-making facilities.", "A Triple Room accommodates 3 guests with 1 double and 1 single bed or 3 single beds, ideal for families or friends.", 30,3,3, 3, 2)
-    #
-    # dao.add_room("Single Room", "A Single Room in a hotel is designed to accommodate one guest, making it ideal for solo travelers or business guests. The room typically features a single bed (twin size) or sometimes a small double bed, depending on the hotel's standard. The average room size is around 15-20 square meters, providing a compact yet comfortable space.", "A Single Room accommodates 1 guest with a single bed, ideal for solo travelers, offering basic amenities.", 10, 1,4,4, 3)
-    # dao.add_room("Double Room", "A Double Room in a hotel is designed to accommodate two guests comfortably. It typically features one double bed or sometimes a queen-size bed, making it ideal for couples or travelers who prefer to share a bed. The room size is usually around 20-25 square meters, providing enough space for relaxation.", "A Double Room accommodates 2 guests with one double or queen-size bed, ideal for couples or friends.", 20,2,3,3,  3)
-    # dao.add_room("Triple Room", "A Triple Room in a hotel is designed to accommodate three guests comfortably. It typically features either one double bed and one single bed or three single beds, depending on the hotel's layout. The room is spacious, usually ranging from 25 to 35 square meters, and comes equipped with essential amenities such as a private bathroom, air conditioning, a flat-screen TV, free Wi-Fi, a minibar, and tea/coffee-making facilities.", "A Triple Room accommodates 3 guests with 1 double and 1 single bed or 3 single beds, ideal for families or friends.", 30,3,3,3,  3)
-    #
-    # dao.add_room_image_by_roomid(room_id=1, image="sd_room1_1.jpg")
-    # dao.add_room_image_by_roomid(room_id=1, image="sd_room1_2.jpg")
-    # dao.add_room_image_by_roomid(room_id=1, image="sd_room1_3.jpg")
-    #
-    # dao.add_room_image_by_roomid(room_id=2, image="sd_room2_1.jpg")
-    # dao.add_room_image_by_roomid(room_id=2, image="sd_room2_2.jpg")
-    # dao.add_room_image_by_roomid(room_id=2, image="sd_room2_3.jpg")
-    #
-    # dao.add_room_image_by_roomid(room_id=3, image="sd_room3_1.jpg")
-    # dao.add_room_image_by_roomid(room_id=3, image="sd_room3_2.jpg")
-    # dao.add_room_image_by_roomid(room_id=3, image="sd_room3_3.jpg")
-    #
-    # dao.add_room_image_by_roomid(room_id=4, image="d_room1_1.jpg")
-    # dao.add_room_image_by_roomid(room_id=4, image="d_room1_2.jpg")
-    # dao.add_room_image_by_roomid(room_id=4, image="d_room1_3.jpg")
-    #
-    # dao.add_room_image_by_roomid(room_id=5, image="d_room2_1.jpg")
-    # dao.add_room_image_by_roomid(room_id=5, image="d_room2_2.jpg")
-    #
-    # dao.add_room_image_by_roomid(room_id=6, image="d_room3_1.jpg")
-    #
-    # dao.add_room_image_by_roomid(room_id=7, image="s_room1_1.jpg")
-    # dao.add_room_image_by_roomid(room_id=7, image="s_room1_2.jpg")
-    # dao.add_room_image_by_roomid(room_id=7, image="s_room1_3.jpg")
-    #
-    # dao.add_room_image_by_roomid(room_id=8, image="s_room2_1.jpg")
-    # dao.add_room_image_by_roomid(room_id=8, image="s_room2_2.jpg")
-    #
-    # dao.add_room_image_by_roomid(room_id=9, image="s_room3_1.jpg")
-    # dao.add_room_image_by_roomid(room_id=9, image="s_room3_2.jpg")
-    #
-    # dao.add_staff("Thien Vy", "abc", "thienvy@gmail.com")
 
     thread = threading.Thread(target=update_vacant_room)
     thread.start()
@@ -240,6 +191,8 @@ def process_booking():
     room_id = data['room_id']
     user_id = current_user.id
 
+    data['price_booking'] = float(data['price_booking'])
+
     dao.add_book(user_id=user_id, cccd=data['customer_cccd'], accurate_checkout_date=data['checkOut'])
     book = dao.get_last_book()
     dao.add_book_detail(book_id=book.id, room_id=room_id, check_in_date=data['checkIn'], check_out_date=data['checkOut'], total_price=data['price_booking'], quantity=data['quantity_booking'], number_of_foreigners=data['number_foreigners'], special_request=data['specialRequests'])
@@ -257,11 +210,11 @@ def booked_page():
     book_details = []
     rooms = []
     room_types = []
-    configs = []
-    for book in books:
-        book_details.append(dao.get_book_details_by_bookid(book.id))
-        rooms.append(dao.get_room_by_id(book_details[len(book_details) - 1].room_id))
-        room_types.append(dao.get_room_type_by_id(rooms[len(rooms) - 1].room_type_id))
+    if books:
+        for book in books:
+            book_details.append(dao.get_book_details_by_bookid(book.id))
+            rooms.append(dao.get_room_by_id(book_details[len(book_details) - 1].room_id))
+            room_types.append(dao.get_room_type_by_id(rooms[len(rooms) - 1].room_type_id))
 
     cart = dao.get_cart_by_userid(current_user.id)
     return render_template("client/booked.html", cart=cart, books=books, book_details=book_details, rooms=rooms, room_types=room_types)
@@ -323,7 +276,9 @@ def checkout_page():
 
 # =================== STAFF =========================#
 def authenticated_staff_account():
-    if not current_user.is_authenticated or not ((current_user.user_role == UserRole.STAFF) or not (current_user.user_role == UserRole.ADMIN)):
+    if (current_user.is_authenticated and ((current_user.user_role == UserRole.STAFF) or (current_user.user_role == UserRole.ADMIN))):
+        pass
+    else:
         return redirect("/login")
 
 @app.route('/staff/customer', methods=['get'])
@@ -499,6 +454,17 @@ def config_page():
         return auth_result
     configs = dao.load_config()
     return render_template("/staff/config.html", configs=configs)
+
+
+#Admin
+@app.route("/login-admin", methods=['post'])
+def login_admin_process():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    u = dao.auth_user(email=email, password=password, role=UserRole.ADMIN)
+    if u:
+        login_user(u)
+    return redirect('/admin')
 
 if __name__ == '__main__':
     app.run(debug=True)

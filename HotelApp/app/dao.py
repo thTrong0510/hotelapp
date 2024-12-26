@@ -1,5 +1,6 @@
-from HotelApp.app.models import User, RoomType, Cart, CartDetail, ConfigParameters, Room, RoomImage, BookDetail, Book, \
-    UserRole
+from sqlalchemy import func
+
+from HotelApp.app.models import User, RoomType, Cart, CartDetail, ConfigParameters, Room, RoomImage, BookDetail, Book, UserRole
 from HotelApp.app import app, db
 import hashlib
 import cloudinary.uploader
@@ -14,6 +15,12 @@ def add_user(name, password, email):
     db.session.commit()
 
 def add_staff(name, password, email, user_role=UserRole.STAFF):
+    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
+    u = User(name=name, password=password, email=email, user_role=user_role)
+    db.session.add(u)
+    db.session.commit()
+
+def add_admin(name, password, email, user_role=UserRole.ADMIN):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
     u = User(name=name, password=password, email=email, user_role=user_role)
     db.session.add(u)
@@ -36,8 +43,8 @@ def update_status_user_by_id(user_id, status):
     user.status = status
     db.session.commit()
 
-def add_config_parameters(rev_period_checkin, surcharge):
-    config = ConfigParameters(rev_period_checkin=rev_period_checkin, surcharge=surcharge)
+def add_config_parameters(rev_period_checkin, surcharge, foreign_guest_multiplier):
+    config = ConfigParameters(rev_period_checkin=rev_period_checkin, surcharge=surcharge, foreign_guest_multiplier=foreign_guest_multiplier)
     db.session.add(config)
     db.session.commit()
 
@@ -47,8 +54,8 @@ def get_config_by_id(config_id):
 def load_config():
     return ConfigParameters.query.all()
 
-def add_room_type(name, price, quantity, config_id):
-    room_type = RoomType(name=name, price=price, quantity=quantity, config_id=config_id)
+def add_room_type(name, price, config_id):
+    room_type = RoomType(name=name, price=price, config_id=config_id)
     db.session.add(room_type)
     db.session.commit()
 
@@ -188,4 +195,28 @@ def auth_user(email, password, role=None):
         u = u.filter(User.user_role.__eq__(role))
 
     return u.first()
+
+
+#Admin
+def count_Rom_by_Romtype():
+    return db.session.query(RoomType.id, RoomType.name, func.count(Room.id)) \
+        .join(Room, Room.room_type_id.__eq__(RoomType.id), isouter=True) \
+        .group_by(RoomType.id).all()
+def revenue_time( year):
+    return db.session.query(func.extract('quarter', Book.booking_date),
+                            func.sum(BookDetail.total_price)) \
+            .join(BookDetail, BookDetail.book_id.__eq__(Book.id)) \
+                .filter(func.extract("year", Book.booking_date).__eq__(year)) \
+                .group_by(func.extract('quarter', Book.booking_date)) .all()
+
+def stats_room_type():
+    return db.session.query(
+        RoomType.id,
+        RoomType.name,
+        func.coalesce(func.sum(BookDetail.total_price), 0).label('total_price')
+    ).join(Room, Room.room_type_id == RoomType.id, isouter=True)\
+     .join(BookDetail, Room.id == BookDetail.room_id, isouter=True)\
+     .group_by(RoomType.id, RoomType.name)\
+     .order_by(RoomType.id)\
+     .all()
 

@@ -2,10 +2,10 @@
 
 {% block content %}
 
-<h1 class="mt-4">Manage Customer</h1>
+<h1 class="mt-4">Manage Room Type</h1>
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item"><a href="/staff/customer">Dashboard</a></li>
-    <li class="breadcrumb-item active">Customer</li>
+    <li class="breadcrumb-item active">Room Type</li>
 </ol>
 <div class="mt-2">
     <div class="row">
@@ -17,10 +17,6 @@
                     <tr>
                         <th scope="col" class="text-center" style="height: auto;">Room Type Name</th>
                         <th scope="col" class="text-center" style="height: auto;">Price</th>
-                        <th scope="col" class="text-center" style="height: auto;">Quantity</th>
-                        <th scope="col" class="text-center" style="height: auto;">Daily Multiplier</th>
-                        <th scope="col" class="text-center" style="height: auto;">room Count Multiplier</th>
-                        <th scope="col" class="text-center" style="height: auto;">Foreign Guest Multiplier</th>
                         <th scope="col" class="text-center" style="height: auto;">Config ID</th>
                     </tr>
                     </thead>
@@ -33,18 +29,6 @@
                                 </td>
                                  <td>
                                     <p class="text-center mb-0 mt-4 price">{{ room_type.price }}</p>
-                                </td>
-                                <td>
-                                    <p class="text-center mb-0 mt-4">{{ room_type.quantity }}</p>
-                                </td>
-                                <td>
-                                    <p class="text-center mb-0 mt-4">{{ room_type.daily_multiplier }}</p>
-                                </td>
-                                <td>
-                                    <p class="text-center mb-0 mt-4 checkIn_">{{ room_type.room_count_multiplier }}</p>
-                                </td>
-                                <td>
-                                    <p class="text-center mb-0 mt-4 checkOut_">{{ room_type.foreign_guest_multiplier }}</p>
                                 </td>
                                 <td>
                                     <p class="text-center mb-0 mt-4 checkOut_">{{ room_type.config_id }}</p>

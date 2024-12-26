@@ -2,10 +2,10 @@
 
 {% block content %}
 
-<h1 class="mt-4">Manage Customer</h1>
+<h1 class="mt-4">Manage Configuration</h1>
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item"><a href="/staff/customer">Dashboard</a></li>
-    <li class="breadcrumb-item active">Customer</li>
+    <li class="breadcrumb-item active">Configuration</li>
 </ol>
 <div class="mt-2">
     <div class="row">
@@ -18,6 +18,9 @@
                         <th scope="col" class="text-center" style="height: auto;">ID</th>
                         <th scope="col" class="text-center" style="height: auto;">Reverse Period Check-in</th>
                         <th scope="col" class="text-center" style="height: auto;">Surcharge</th>
+                        <th scope="col" class="text-center" style="height: auto;">Foreign Guest Multiplier</th>
+                        <th scope="col" class="text-center" style="height: auto;">Daily Multiplier</th>
+                        <th scope="col" class="text-center" style="height: auto;">room Count Multiplier</th>
                         <th scope="col" class="text-center" style="height: auto;">Created At</th>
                     </tr>
                     </thead>
@@ -33,6 +36,15 @@
                                 </td>
                                 <td>
                                     <p class="text-center mb-0 mt-4 price">{{ config.surcharge }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-center mb-0 mt-4">{{ config.foreign_guest_multiplier }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-center mb-0 mt-4">{{ config.daily_multiplier }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-center mb-0 mt-4">{{ config.room_count_multiplier }}</p>
                                 </td>
                                 <td>
                                     <p class="text-center mb-0 mt-4">{{ config.created_at }}</p>

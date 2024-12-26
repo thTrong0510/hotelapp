@@ -13,14 +13,16 @@ class UserRole(RoleEnum):
 
 class UserType(RoleEnum):
     Domestic = 1
-    Foreign = 2
+    Foreigner = 2
 
 class ConfigParameters(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     rev_period_checkin = db.Column(db.Integer, default=28)
+    foreign_guest_multiplier = Column(Float, nullable=False, default=1.5)
+    daily_multiplier = Column(Float, nullable=False, default=1)
+    room_count_multiplier = Column(Float, nullable=False, default=0.7)
     surcharge = Column(Float, default=1)
     created_at = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
-    user_type = Column(Enum(UserType), default=UserType.Domestic)
     room_type = relationship('RoomType', backref='ConfigParameters', lazy=True)
 
 
@@ -51,12 +53,10 @@ class RoomType(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), unique=True)
     price = db.Column(Float, nullable=False)
-    quantity = Column(Integer, nullable=False)
-    daily_multiplier = Column(Float, nullable=False, default=1)
-    room_count_multiplier = Column(Float, nullable=False, default=0.7)
-    foreign_guest_multiplier = Column(Float, nullable=False, default=0.2)
     config_id = db.Column(db.Integer, ForeignKey('config_parameters.id'), nullable=False)
     room = db.relationship('Room', backref='RoomType', lazy=True)
+    def __str__(self):
+        return self.name
 
 class Room(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -101,3 +101,4 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         db.session.commit()
+
